@@ -19,9 +19,9 @@ COLORMAP = {"red": "#ff0000",
             "black": "#000000",
             }
 
-FONT_NAME = '-schumacher-clean-bold-r-normal--8-80-75-75-c-80-iso646.1991-irv'
-FONT_WIDTH = 8
-FONT_HEIGHT = 8
+FONT_NAME = '-PxPlus-HP-100LX-10x11'
+FONT_WIDTH = 16
+FONT_HEIGHT = 16
 
 ACCEPTED_KEYS = "abcdefghijklmnopqrstuvwxyzåäö"
 
@@ -49,7 +49,6 @@ class Window():
     def __init__(self):
         self.disp = Display()
         self.screen = self.disp.screen()
-        self.font = self.load_font()
         self.width, self.height = self.screen.width_in_pixels, FONT_HEIGHT
 
         self.x = 0
@@ -90,26 +89,6 @@ class Window():
         window.map()
         return window
 
-    def load_font(self, font=None):
-        """Load bitmap font FONT in display DISP, and return the loaded font
-        object.  If font loading failed, return None."""
-        if font is not None:
-            global FONT_NAME
-            FONT_NAME = font
-            spec = font.split('-')
-            # record the font width and height for later use
-            try:
-                if spec[7]:
-                    global FONT_WIDTH
-                    FONT_WIDTH = int(spec[7])
-                if spec[12]:
-                    global FONT_HEIGHT
-                    FONT_HEIGHT = int(spec[12]) // 10
-            except Exception:
-                pass
-        font = self.disp.open_font(FONT_NAME)
-        return font
-
     def load_colormap(self):
         """Create GCs (Graphics Content) on screen SCREEN in display DISP for
         window WINDOW with font FONT.  GCs are returned as a dictionary, whose
@@ -125,8 +104,9 @@ class Window():
                 g = int(green * level / 100)
                 b = int(blue * level / 100)
                 pixel = (r << 16) | (g << 8) | b
-                self.gcs[color][level] = self.window.create_gc(font=self.font,
-                                                               foreground=pixel)
+                # self.gcs[color][level] = self.window.create_gc(font=self.font,
+                #                                                foreground=pixel)
+                self.gcs[color][level] = self.window.create_gc(foreground=pixel)
 
     def draw_str(self, astr, col=0, row=0, color='white', level=100,
                  reverse=False):
