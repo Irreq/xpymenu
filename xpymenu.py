@@ -16,14 +16,16 @@ COLORMAP = {"red": "#ff0000",
             "green": "#00ff00",
             "blue": "#0000ff",
             "white": "#ffffff",
-            "black": "#000000",
+            "black_old": "#000000",
+            "black": "#cad624",
             }
 
 FONT_NAME = '-PxPlus-HP-100LX-10x11'
-FONT_WIDTH = 16
+FONT_WIDTH = 6 # Working on my computer
 FONT_HEIGHT = 16
 
-ACCEPTED_KEYS = "abcdefghijklmnopqrstuvwxyzåäö"
+# Note that space is the first character
+ACCEPTED_KEYS = " abcdefghijklmnopqrstuvwxyz"
 
 # END CONFIG
 
@@ -63,7 +65,6 @@ class Window():
         window.clear_area(0, 0, geom.width, geom.height)
 
     def screen_flush(self, screen):
-        # NOTE: the following line is necessary due to unknown reason
         screen.default_colormap.alloc_named_color('white')
 
     def create_window(self, override=1, mask=X.ExposureMask):
@@ -224,39 +225,25 @@ class Menu(Window):
         """Handles when key has been released"""
         if (event.type == X.KeyRelease):
             code = self.root_display.keycode_to_keysym(event.detail, 0)
-            key = XK.keysym_to_string(code)
+            key = str(XK.keysym_to_string(code))
 
-            try:
-                if key in self.keys:
-                    self._insert_key_pos(key, pos=0)
-                    return
-            except Exception:
-                pass
-
-            # Return
-            if code == 65293:
-                stop()
-            # Esc
-            elif code == 65307:
-                stop()
-            # Delete
-            elif code == 65535:
-                # 1 means that the character after is being removed, 0 would be the standing one
+            if key in self.keys:
+                self._insert_key_pos(key, pos=0)
+            elif code == 65535:  # Delete
                 self._delete_key_pos(pos=0)
-            # Backslash
-            elif code == 65288:
+            elif code == 65288:  # Backslash
                 self._delete_key_pos(pos=-1)
-            # Space
-            elif code == 32:
-                self._insert_key_pos(" ", pos=0)
-            # Right
-            elif code == 65363:
+            elif code == 65363:  # Right
                 self._cursor_to_right()
-            # Left
-            elif code == 65361:
+            elif code == 65361:  # Left
                 self._cursor_to_left()
-            else:
+            elif code == 65293:  # Return
                 stop()
+            else:
+                self.user_input = ""
+                stop()
+
+            return
 
     def _grab_root_events(self):
         self.root_display = Display()
